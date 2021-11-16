@@ -9,7 +9,7 @@ const registerUser = async (req, res) => {
   const existingUser = await user.findOne({ email: req.body.email });
   if (existingUser)
     return res.status(400).send({ message: "The user is already registered" });
-//es un password encriptado, 10 codigo que recomienda el hash para tomar 10 caracteres , el mismo hash lo recomienda , ese código encriptado
+//es un password encriptado, 10 codigo que recomienda el hash para tomar 10 caracteres  al azar y arme la contraseña encriptada , el mismo hash lo recomienda , ese código encriptado, hash un tipo de encriptacion que existe como unas reglas
   const passHash = await bcrypt.hash(req.body.password, 10);
 
   //necesita asignar el role de user
@@ -74,11 +74,11 @@ const findUser = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-  if (!req.body.name || !req.body.email || !req.body.roleId)
+  if (!req.body.name || !req.body.email || !req.body.roleId)//si no esta el password aca, es porque es un dato obligatorio
     return res.status(400).send({ message: "Incomplete data" });
 
   const changeEmail = await user.findById({ _id: req.body._id });
-  if (req.body.email !== changeEmail.email)
+  if (req.body.email !== changeEmail.email)//el correo que llego es diferente al que esta dentro del json de la base de datos
     return res
       .status(400)
       .send({ message: "The email should never be changed" });
@@ -131,11 +131,11 @@ const login = async (req, res) => {
 
   const userLogin = await user.findOne({ email: req.body.email });
   if (!userLogin)
-    return res.status(400).send({ message: "Wrong email or password" });
+    return res.status(400).send({ message: "Wrong email" });//wrong equivocado
 
   const hash = await bcrypt.compare(req.body.password, userLogin.password);
   if (!hash)
-    return res.status(400).send({ message: "Wrong email or password" });
+    return res.status(400).send({ message: "Wrong password" });
 
   return !userLogin
     ? res.status(400).send({ message: "User no found" })
